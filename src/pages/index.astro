@@ -1,5 +1,4 @@
 ---
-
 ---
 
 <html lang="en">
@@ -8,9 +7,54 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Color Free</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 20px;
+			}
+			.container {
+				text-align: center;
+				color: white;
+			}
+			h1 {
+				font-size: 4rem;
+				margin-bottom: 1rem;
+				text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+			}
+			p {
+				font-size: 1.5rem;
+				margin-bottom: 2rem;
+				opacity: 0.9;
+			}
+			.app-description {
+				background: rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(10px);
+				padding: 2rem;
+				border-radius: 20px;
+				max-width: 600px;
+				margin: 2rem auto;
+			}
+		</style>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<div class="container">
+			<h1>Color Free</h1>
+			<p>A colorful experience awaits!</p>
+			<div class="app-description">
+				<p>Welcome to Color Free - where creativity meets simplicity.</p>
+			</div>
+		</div>
 	</body>
 </html>
