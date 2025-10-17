@@ -1,0 +1,441 @@
+---
+export function getStaticPaths() {
+	return [
+		{ params: { id: '1' } }
+	];
+}
+
+const { id } = Astro.params;
+
+const coloringPages = {
+	'1': { title: 'Cat in Garden', image: '/coloring-pages/cat_1.png' },
+};
+
+const page = coloringPages[id as string] || coloringPages['1'];
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<title>ColorFree - {page.title}</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+				background: #f5f5f5;
+				overflow: hidden;
+				height: 100vh;
+			}
+
+			.app-container {
+				display: flex;
+				height: 100vh;
+			}
+
+			/* Sidebar */
+			.sidebar {
+				width: 320px;
+				background: white;
+				box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+				display: flex;
+				flex-direction: column;
+				overflow-y: auto;
+			}
+
+			.sidebar-header {
+				padding: 20px;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+			}
+
+			.sidebar-header h2 {
+				font-size: 20px;
+				margin-bottom: 5px;
+			}
+
+			.back-link {
+				color: white;
+				text-decoration: none;
+				font-size: 14px;
+				opacity: 0.9;
+				display: inline-block;
+				margin-bottom: 10px;
+			}
+
+			.tool-section {
+				padding: 20px;
+				border-bottom: 1px solid #eee;
+			}
+
+			.tool-section h3 {
+				font-size: 16px;
+				margin-bottom: 15px;
+				color: #333;
+			}
+
+			/* Color Picker */
+			.color-palette {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 12px;
+				margin-bottom: 15px;
+			}
+
+			.color-option {
+				width: 100%;
+				height: 50px;
+				border-radius: 8px;
+				cursor: pointer;
+				border: 3px solid transparent;
+				transition: all 0.2s ease;
+			}
+
+			.color-option.active {
+				border-color: #333;
+				transform: scale(1.05);
+				box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+			}
+
+			.custom-color-picker {
+				width: 100%;
+				height: 50px;
+				border-radius: 8px;
+				border: 2px solid #ddd;
+				cursor: pointer;
+			}
+
+			.tool-toggle {
+				display: flex;
+				gap: 10px;
+				margin-bottom: 15px;
+			}
+
+			.tool-btn {
+				flex: 1;
+				padding: 12px;
+				border: 2px solid #ddd;
+				background: white;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 14px;
+				transition: all 0.2s ease;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 5px;
+			}
+
+			.tool-btn.active {
+				border-color: #667eea;
+				background: #f0f0ff;
+			}
+
+			.brush-size {
+				width: 100%;
+				margin-top: 10px;
+			}
+
+			/* Action Buttons */
+			.action-buttons {
+				display: flex;
+				flex-direction: column;
+				gap: 10px;
+			}
+
+			.action-btn {
+				padding: 12px;
+				border: none;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: 600;
+				transition: all 0.2s ease;
+			}
+
+			.clear-btn {
+				background: #ff6b6b;
+				color: white;
+			}
+
+			.clear-btn:hover {
+				background: #ff5252;
+			}
+
+			.save-btn {
+				background: #51cf66;
+				color: white;
+			}
+
+			.save-btn:hover {
+				background: #40c057;
+			}
+
+			/* Canvas Area */
+			.canvas-area {
+				flex: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 40px;
+				background: #f5f5f5;
+			}
+
+			.canvas-container {
+				background: white;
+				border-radius: 15px;
+				box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+				padding: 20px;
+				position: relative;
+			}
+
+			canvas {
+				display: block;
+				max-width: 100%;
+				height: auto;
+				cursor: crosshair;
+				touch-action: none;
+			}
+
+			@media (max-width: 768px) {
+				.app-container {
+					flex-direction: column;
+				}
+				.sidebar {
+					width: 100%;
+					height: auto;
+					max-height: 40vh;
+				}
+				.canvas-area {
+					padding: 20px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app-container">
+			<div class="sidebar">
+				<div class="sidebar-header">
+					<a href="/gallery" class="back-link">← Back to Gallery</a>
+					<h2>{page.title}</h2>
+				</div>
+
+				<div class="tool-section">
+					<h3>🛠️ Tool</h3>
+					<div class="tool-toggle">
+						<button class="tool-btn active" id="brushBtn">
+							<span style="font-size: 24px;">🖌️</span>
+							<span>Brush</span>
+						</button>
+						<button class="tool-btn" id="eraserBtn">
+							<span style="font-size: 24px;">🧹</span>
+							<span>Eraser</span>
+						</button>
+					</div>
+				</div>
+
+				<div class="tool-section" id="colorSection">
+					<h3>🎨 Colors</h3>
+					<div class="color-palette">
+						<div class="color-option active" style="background: #ff0000;" data-color="#ff0000"></div>
+						<div class="color-option" style="background: #00ff00;" data-color="#00ff00"></div>
+						<div class="color-option" style="background: #0000ff;" data-color="#0000ff"></div>
+						<div class="color-option" style="background: #ffff00;" data-color="#ffff00"></div>
+						<div class="color-option" style="background: #ff00ff;" data-color="#ff00ff"></div>
+						<div class="color-option" style="background: #00ffff;" data-color="#00ffff"></div>
+						<div class="color-option" style="background: #ff8800;" data-color="#ff8800"></div>
+						<div class="color-option" style="background: #8800ff;" data-color="#8800ff"></div>
+						<div class="color-option" style="background: #00ff88;" data-color="#00ff88"></div>
+						<div class="color-option" style="background: #ff88cc;" data-color="#ff88cc"></div>
+						<div class="color-option" style="background: #88ccff;" data-color="#88ccff"></div>
+						<div class="color-option" style="background: #ffcc88;" data-color="#ffcc88"></div>
+					</div>
+					<input type="color" class="custom-color-picker" id="colorPicker" value="#ff0000" />
+				</div>
+
+				<div class="tool-section">
+					<h3 id="sizeLabel">🖌️ Brush Size</h3>
+					<label style="display: block; margin-bottom: 10px; color: #666; font-size: 14px;">
+						Size: <span id="sizeValue">10</span>px
+					</label>
+					<input type="range" class="brush-size" id="brushSize" min="5" max="50" value="10" />
+				</div>
+
+				<div class="tool-section">
+					<h3>⚡ Actions</h3>
+					<div class="action-buttons">
+						<button class="action-btn clear-btn" id="clearBtn">🗑️ Clear Drawing</button>
+						<button class="action-btn save-btn" id="saveBtn">💾 Save Artwork</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="canvas-area">
+				<div class="canvas-container">
+					<canvas id="canvas"></canvas>
+				</div>
+			</div>
+		</div>
+
+		<script define:vars={{ imagePath: page.image }}>
+			const canvas = document.getElementById('canvas');
+			const ctx = canvas.getContext('2d');
+			const colorOptions = document.querySelectorAll('.color-option');
+			const colorPicker = document.getElementById('colorPicker');
+			const brushSize = document.getElementById('brushSize');
+			const sizeValue = document.getElementById('sizeValue');
+			const clearBtn = document.getElementById('clearBtn');
+			const saveBtn = document.getElementById('saveBtn');
+			const brushBtn = document.getElementById('brushBtn');
+			const eraserBtn = document.getElementById('eraserBtn');
+			const colorSection = document.getElementById('colorSection');
+			const sizeLabel = document.getElementById('sizeLabel');
+
+			let currentColor = '#ff0000';
+			let currentSize = 10;
+			let isDrawing = false;
+			let isEraser = false;
+			let backgroundImage = new Image();
+			let drawingCanvas = document.createElement('canvas');
+			let drawingCtx = drawingCanvas.getContext('2d');
+
+			// Load the coloring page image
+			backgroundImage.src = imagePath;
+			backgroundImage.onload = function() {
+				canvas.width = backgroundImage.width;
+				canvas.height = backgroundImage.height;
+				drawingCanvas.width = backgroundImage.width;
+				drawingCanvas.height = backgroundImage.height;
+				redrawCanvas();
+			};
+
+			function redrawCanvas() {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.drawImage(backgroundImage, 0, 0);
+				ctx.drawImage(drawingCanvas, 0, 0);
+			}
+
+			// Tool selection
+			brushBtn.addEventListener('click', () => {
+				isEraser = false;
+				brushBtn.classList.add('active');
+				eraserBtn.classList.remove('active');
+				colorSection.style.display = 'block';
+				sizeLabel.textContent = '🖌️ Brush Size';
+			});
+
+			eraserBtn.addEventListener('click', () => {
+				isEraser = true;
+				eraserBtn.classList.add('active');
+				brushBtn.classList.remove('active');
+				colorSection.style.display = 'none';
+				sizeLabel.textContent = '🧹 Eraser Size';
+			});
+
+			// Color selection
+			colorOptions.forEach(option => {
+				option.addEventListener('click', () => {
+					colorOptions.forEach(o => o.classList.remove('active'));
+					option.classList.add('active');
+					currentColor = option.getAttribute('data-color');
+					colorPicker.value = currentColor;
+				});
+			});
+
+			colorPicker.addEventListener('input', (e) => {
+				currentColor = e.target.value;
+				colorOptions.forEach(o => o.classList.remove('active'));
+			});
+
+			// Brush size
+			brushSize.addEventListener('input', (e) => {
+				currentSize = parseInt(e.target.value);
+				sizeValue.textContent = currentSize.toString();
+			});
+
+			// Drawing functions
+			function startDrawing(e) {
+				isDrawing = true;
+				draw(e);
+			}
+
+			function stopDrawing() {
+				isDrawing = false;
+				ctx.beginPath();
+			}
+
+			function draw(e) {
+				if (!isDrawing) return;
+
+				const rect = canvas.getBoundingClientRect();
+				let x, y;
+
+				if (e instanceof MouseEvent) {
+					x = (e.clientX - rect.left) * (canvas.width / rect.width);
+					y = (e.clientY - rect.top) * (canvas.height / rect.height);
+				} else if (e.touches) {
+					const touch = e.touches[0];
+					x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+					y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+				}
+
+				drawingCtx.lineWidth = currentSize;
+				drawingCtx.lineCap = 'round';
+
+				if (isEraser) {
+					drawingCtx.globalCompositeOperation = 'destination-out';
+					drawingCtx.strokeStyle = 'rgba(0,0,0,1)';
+				} else {
+					drawingCtx.globalCompositeOperation = 'source-over';
+					drawingCtx.strokeStyle = currentColor;
+					drawingCtx.globalAlpha = 0.8;
+				}
+
+				drawingCtx.lineTo(x, y);
+				drawingCtx.stroke();
+				drawingCtx.beginPath();
+				drawingCtx.moveTo(x, y);
+
+				redrawCanvas();
+			}
+
+			// Mouse events
+			canvas.addEventListener('mousedown', startDrawing);
+			canvas.addEventListener('mousemove', draw);
+			canvas.addEventListener('mouseup', stopDrawing);
+			canvas.addEventListener('mouseout', stopDrawing);
+
+			// Touch events
+			canvas.addEventListener('touchstart', (e) => {
+				e.preventDefault();
+				startDrawing(e);
+			});
+			canvas.addEventListener('touchmove', (e) => {
+				e.preventDefault();
+				draw(e);
+			});
+			canvas.addEventListener('touchend', stopDrawing);
+
+			// Clear button
+			clearBtn.addEventListener('click', () => {
+				if (confirm('Are you sure you want to clear your drawing?')) {
+					drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+					redrawCanvas();
+				}
+			});
+
+			// Save button
+			saveBtn.addEventListener('click', () => {
+				const link = document.createElement('a');
+				link.download = 'colorfree-artwork.png';
+				link.href = canvas.toDataURL('image/png');
+				link.click();
+			});
+		</script>
+	</body>
+</html>

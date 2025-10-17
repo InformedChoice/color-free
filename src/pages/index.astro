@@ -7,7 +7,7 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Color Free</title>
+		<title>ColorFree - Free Coloring Pages</title>
 		<style>
 			* {
 				margin: 0;
@@ -15,45 +15,105 @@
 				box-sizing: border-box;
 			}
 			body {
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
 				min-height: 100vh;
 				display: flex;
-				flex-direction: column;
 				align-items: center;
 				justify-content: center;
 				padding: 20px;
 			}
+
 			.container {
+				max-width: 700px;
+				width: 100%;
 				text-align: center;
-				color: white;
+				padding: 60px 40px;
 			}
+
 			h1 {
-				font-size: 4rem;
-				margin-bottom: 1rem;
-				text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+				font-size: 72px;
+				margin-bottom: 30px;
+				font-weight: 700;
+				text-shadow: 2px 2px 12px rgba(0,0,0,0.3);
+				line-height: 1.2;
 			}
-			p {
-				font-size: 1.5rem;
-				margin-bottom: 2rem;
+
+			.tagline {
+				font-size: 32px;
+				margin-bottom: 60px;
+				opacity: 0.95;
+				font-weight: 300;
+			}
+
+			.description {
+				font-size: 20px;
+				margin-bottom: 50px;
+				line-height: 1.6;
 				opacity: 0.9;
 			}
-			.app-description {
-				background: rgba(255, 255, 255, 0.1);
-				backdrop-filter: blur(10px);
-				padding: 2rem;
-				border-radius: 20px;
-				max-width: 600px;
-				margin: 2rem auto;
+
+			.cta-button {
+				background: white;
+				color: #764ba2;
+				padding: 20px 60px;
+				font-size: 24px;
+				border: none;
+				border-radius: 50px;
+				cursor: pointer;
+				font-weight: 700;
+				box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+				transition: all 0.3s ease;
+				text-decoration: none;
+				display: inline-block;
+			}
+
+			.cta-button:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+			}
+
+			.features-simple {
+				margin-top: 60px;
+				font-size: 18px;
+				opacity: 0.9;
+				line-height: 2;
+			}
+
+			@media (max-width: 768px) {
+				h1 {
+					font-size: 48px;
+				}
+				.tagline {
+					font-size: 24px;
+				}
+				.description {
+					font-size: 18px;
+				}
+				.cta-button {
+					font-size: 20px;
+					padding: 16px 40px;
+				}
 			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Color Free</h1>
-			<p>A colorful experience awaits!</p>
-			<div class="app-description">
-				<p>Welcome to Color Free - where creativity meets simplicity.</p>
+			<h1>ColorFree</h1>
+			<p class="tagline">Free Coloring Pages for Everyone</p>
+
+			<p class="description">
+				Hundreds of beautiful coloring pages ready for you to bring to life with your creativity.
+			</p>
+
+			<a href="/gallery" class="cta-button">Start Coloring</a>
+
+			<div class="features-simple">
+				✨ Free Forever<br>
+				🎨 Unlimited Colors<br>
+				🖌️ Apple Pencil Support<br>
+				💎 Premium Brushes Available
 			</div>
 		</div>
 	</body>
